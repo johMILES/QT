@@ -12,6 +12,9 @@
 #include <QFile>
 #include <QDataStream>
 #include <QTextStream>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -155,16 +158,21 @@ void CodeWidget::lookFileContents(bool)
     QString fileName = ui->fileTableList->item(row,0)->toolTip();
 
     //打开额外的本地记事本程序，打开预览文件
-    QProcess *icemProcess=new QProcess;
+
 
 #ifdef Q_OS_MAC
+    QProcess *icemProcess=new QProcess;
     QStringList arguments;
     QString bash="open";
     arguments<<"-e"<<fileName;
     icemProcess->startDetached(bash,arguments);
 #else
-    QString notepadPath = "notepad.exe";
-    icemProcess->start(notepadPath);    //此处还未在Windows下测试
+    QDesktopServices look;
+    bool r = look.openUrl(QUrl(fileName));
+    if(r == false)
+    {
+        QMessageBox::warning(this,tr("提示"),tr("未能正确打开文件，请联系开发人员"));
+    }
 #endif
 }
 
