@@ -9,6 +9,11 @@
 #include <QDir>
 #include <QTextCodec>
 #include <QProcess>
+#include <QFile>
+#include <QDataStream>
+#include <QTextStream>
+
+#include <QDebug>
 
 CodeWidget::CodeWidget(QWidget *parent) :
     QMainWindow(parent),
@@ -21,6 +26,7 @@ CodeWidget::CodeWidget(QWidget *parent) :
     initData();
 }
 
+//初始化槽函数链接
 void CodeWidget::initConnect()
 {
     connect(ui->selectFile,SIGNAL( clicked(bool) ),
@@ -35,21 +41,26 @@ void CodeWidget::initConnect()
             this,SLOT( setParameters(bool) ));
     connect(ui->quit,SIGNAL( clicked(bool) ),
             this,SLOT( quitThis(bool) ));
+    connect(ui->makeForFile,SIGNAL( clicked(bool) ),
+            this,SLOT( makeForFile(bool) ));
     connect(ui->fileTableList,SIGNAL( itemClicked(QTableWidgetItem*) ),
             this,SLOT( tableItemClicked(QTableWidgetItem*) ));
 
 }
 
+//初始化界面的控件可操作状态
 void CodeWidget::initUiStatus()
 {
 
 }
 
+//初始化控件的提示信息
 void CodeWidget::initToolTips()
 {
 
 }
 
+//初始化数据成员
 void CodeWidget::initData()
 {
     paraDialog = new Parameter();
@@ -61,8 +72,10 @@ void CodeWidget::initData()
     files_CodeLines = 0;
     files_NoteLines = 0;
     files_SpaceLines = 0;
+    file_Numbers =0;
 }
 
+//选择需要统计的单个文件
 void CodeWidget::selectFile(bool)
 {
 
@@ -79,7 +92,7 @@ void CodeWidget::selectFile(bool)
                                         "CPP (*.cpp);;H (*.h )");
     if(filesList.count()>0)
     {
-        ui->showFileList->setText("共选中"+QString::number(filesList.count()) +"个文件 ："+filesList.first());
+        ui->showFileList->setText(tr("共选中")+QString::number(filesList.count()) +tr("个文件 ：")+filesList.first());
     }
     else
     {
@@ -88,6 +101,7 @@ void CodeWidget::selectFile(bool)
 
 }
 
+//选择需要统计的文件夹目录
 void CodeWidget::selectDir(bool)
 {
     QString currPath = QDir::currentPath();
@@ -105,6 +119,7 @@ void CodeWidget::selectDir(bool)
     lookForFile(path);
 }
 
+//开始统计
 void CodeWidget::startStatiscal(bool)
 {   
     if(stThread == NULL)
@@ -119,6 +134,7 @@ void CodeWidget::startStatiscal(bool)
     stThread->run();
 }
 
+//查看选中文件的本地源代码
 void CodeWidget::lookFileContents(bool)
 {
     if(ui->fileTableList->rowCount()<=0)
@@ -149,6 +165,7 @@ void CodeWidget::lookFileContents(bool)
 #endif
 }
 
+//设置参数
 void CodeWidget::setParameters(bool)
 {
     if(paraDialog == NULL)
@@ -162,22 +179,33 @@ void CodeWidget::setParameters(bool)
     }
 }
 
+//关闭软件
 void CodeWidget::quitThis(bool)
 {
     this->close();
 }
 
+//更新表格中的数据
 void CodeWidget::updateTable(QString fileName,int totleLines,int codeLines,int noteLines,int spaceLines)
 {
+    file_Numbers++;
     files_TotleLines += totleLines;
     files_CodeLines += codeLines;
     files_NoteLines += noteLines;
     files_SpaceLines += spaceLines;
 
-    ui->totleLines->setText(QString::number(files_TotleLines));
-    ui->totleCodeLines->setText(QString::number(files_CodeLines));
-    ui->totleNoteLines->setText(QString::number(files_NoteLines));
-    ui->totleSapceLines->setText(QString::number(files_SpaceLines));
+    FileResults *fr = new FileResults;
+    fr->filePath = fileName;
+    fr->totleLines = totleLines;
+    fr->codeLines = codeLines;
+    fr->noteLines = noteLines;
+    fr->spaceLines = spaceLines;
+    fileResults.append(fr);
+
+    ui->totleLines->setText(QString::number(files_TotleLines)+"(共"+QString::number(file_Numbers) +"个文件)");
+    ui->totleCodeLines->setText(QString::number(files_CodeLines)+"("+QString::number((float)files_CodeLines/files_TotleLines*100) +"%)");
+    ui->totleNoteLines->setText(QString::number(files_NoteLines)+"("+QString::number((float)files_NoteLines/files_TotleLines*100) +"%)");
+    ui->totleSapceLines->setText(QString::number(files_SpaceLines)+"("+QString::number((float)files_SpaceLines/files_TotleLines*100) +"%)");
 
     addNewItem();
     QFileInfo info(fileName);
@@ -193,6 +221,7 @@ void CodeWidget::updateTable(QString fileName,int totleLines,int codeLines,int n
 
 }
 
+//添加一个新的条目
 void CodeWidget::addNewItem()
 {
     ui->fileTableList->insertRow(ui->fileTableList->rowCount());
@@ -208,16 +237,19 @@ void CodeWidget::addNewItem()
     }
 }
 
+//删除一个条目
 void CodeWidget::deleteItem()
 {
 
 }
 
+//清空表格中显示的信息
 void CodeWidget::clearTable()
 {
 
 }
 
+//清空表格条目
 void CodeWidget::clearAllTableItem()
 {
     for(int i=ui->fileTableList->rowCount()-1;i>=0;i--)
@@ -226,12 +258,20 @@ void CodeWidget::clearAllTableItem()
     }
 }
 
+//清空界面下方总统计显示的数据
 void CodeWidget::clearTotleLineEdit()
 {
     files_TotleLines = 0;
     files_CodeLines = 0;
     files_NoteLines = 0;
     files_SpaceLines = 0;
+    file_Numbers = 0;
+    foreach (FileResults* fr, fileResults)
+    {
+        delete fr;
+        fr = NULL;
+    }
+    fileResults.clear();
 
     ui->totleLines->setText("");
     ui->totleCodeLines->setText("");
@@ -239,6 +279,7 @@ void CodeWidget::clearTotleLineEdit()
     ui->totleSapceLines->setText("");
 }
 
+//遍历指定文件目录下的文件
 void CodeWidget::lookForFile(const QString &path)
 {
     QDir dir(path);
@@ -258,6 +299,40 @@ void CodeWidget::lookForFile(const QString &path)
     ui->showFileList->setText("选中文件夹目录："+path +"共添加文件"+QString::number(filesList.count())+"个");
 }
 
+//导出统计结果
+void CodeWidget::makeForFile(bool)
+{
+    QString contents ;          //导出的文件内容->需要写入到文件的字符串
+    int index=0;
+    contents += tr("代码统计工具统计结果\n");
+    contents += tr("共文件")+QString::number(fileResults.count())+tr("个\n");
+    foreach(FileResults *fr,fileResults)
+    {
+        contents+=QString::number(++index)+tr(".文件名：")+fr->filePath+" ;\n";
+        contents+=tr("文件总行数：")+QString::number(fr->totleLines) + " ;";
+        contents+=tr("代码总行数：")+QString::number(fr->codeLines) + " ;";
+        contents+=tr("注释行：")+QString::number(fr->noteLines) + " ;";
+        contents+=tr("空行：")+QString::number(fr->spaceLines) + " ;";
+        contents+="\n\n";
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                 tr("保存文件"),
+                                 tr("代码统计结果.txt"));
+    QFile file(fileName);
+    if(!file.open(QFile::ReadWrite))
+    {
+        return;
+    }
+
+    QTextStream writer(&file);
+    writer.setCodec(QTextCodec::codecForName("UTF-8"));
+    writer<<contents;
+
+    file.close();
+}
+
+//响应表格点击事件
 void CodeWidget::tableItemClicked(QTableWidgetItem *item)
 {
     if(item->column() == 0)
@@ -284,6 +359,13 @@ CodeWidget::~CodeWidget()
         delete paraDialog;
         paraDialog = NULL;
     }
+
+    foreach (FileResults* fr, fileResults)
+    {
+        delete fr;
+        fr = NULL;
+    }
+    fileResults.clear();
 
     delete ui;
 }

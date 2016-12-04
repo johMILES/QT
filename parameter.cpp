@@ -12,6 +12,7 @@ Parameter::Parameter(QWidget *parent) :
     initConnect();
 }
 
+//初始化提供给用户选择的格式列表
 void Parameter::initFormats()
 {
     formats += "*.h";
@@ -20,6 +21,7 @@ void Parameter::initFormats()
     formatList = formats;
 }
 
+//初始化槽函数
 void Parameter::initConnect()
 {
     connect(ui->selectAllItem,SIGNAL( stateChanged(int) ),
@@ -32,6 +34,7 @@ void Parameter::initConnect()
             this,SLOT( cancelFormat(bool) ));
 }
 
+//初始化读取文件类型
 void Parameter::initListWidget()
 {
     int i=0;
@@ -45,6 +48,7 @@ void Parameter::initListWidget()
     }
 }
 
+//点击全选
 void Parameter::selectAllItems(int state)
 {
     switch(state)
@@ -64,6 +68,7 @@ void Parameter::selectAllItems(int state)
     }
 }
 
+//点击列表选择状态
 void Parameter::setItemChecked(QListWidgetItem *item)
 {
     if(item->checkState() == Qt::Checked)
@@ -72,7 +77,7 @@ void Parameter::setItemChecked(QListWidgetItem *item)
     }
 }
 
-
+//确认设置
 void Parameter::setDefineFormat(bool)
 {
     formatList.clear();
@@ -86,14 +91,22 @@ void Parameter::setDefineFormat(bool)
     accept();
 }
 
+//确定具体的格式内容
 void Parameter::setFormats(int index)
 {
     formatList.append(formats.at(index));
 }
 
+//取消设置
 void Parameter::cancelFormat(bool)
 {
     this->hide();
+}
+
+//获取设置中的读取文件类型列表
+QStringList Parameter::getFormatList()
+{
+    return formatList;
 }
 
 Parameter::~Parameter()

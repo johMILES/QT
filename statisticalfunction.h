@@ -10,16 +10,9 @@ class StatisticalFunction : public QObject
 public:
     explicit StatisticalFunction(QObject *parent = 0);
     ~StatisticalFunction();
-
-    //设置需要统计的一个文件
-    bool setFile(QString fileName);
-
-    //获取当前统计的文件名
-    QString getFileName();
-
-    //统计方法
-    //统计的核心区功能
-    void Statistical();
+    bool setFile(QString fileName); //设置需要统计的一个文件
+    QString getFileName();          //获取当前统计的文件名
+    void Statistical();             //统计的核心区功能
 
     //获取统计结果:文件总行数
     int  getTotleLines(){return  fileLines;}
@@ -39,20 +32,11 @@ signals:
 public slots:
 
 private:
-    //需要操作统计的文件
-    QFile *file;
-
-    //文件代码总行数
-    int fileLines;
-
-    //代码行数
-    int codeLines;
-
-    //注释行数量
-    int noteLines;
-
-    //空格数量
-    int spaceLines;
+    QFile *file;        //需要操作统计的文件
+    int fileLines;      //文件代码总行数
+    int codeLines;      //代码行数量
+    int noteLines;      //注释行数量
+    int spaceLines;     //空格数量
 
 };
 
