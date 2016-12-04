@@ -45,13 +45,16 @@ void CodeWidget::initConnect()
             this,SLOT( makeForFile(bool) ));
     connect(ui->fileTableList,SIGNAL( itemClicked(QTableWidgetItem*) ),
             this,SLOT( tableItemClicked(QTableWidgetItem*) ));
+    connect(ui->fileTableList->horizontalHeader(),SIGNAL(sectionClicked(int )),
+            this, SLOT(mySort(int)));
 
 }
 
 //初始化界面的控件可操作状态
 void CodeWidget::initUiStatus()
 {
-
+    ui->fileTableList->horizontalHeader()->setSortIndicatorShown(true);
+    ui->fileTableList->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
 
 //初始化控件的提示信息
@@ -89,7 +92,7 @@ void CodeWidget::selectFile(bool)
                                         this,
                                         tr("选择文件"),
                                         currPath,
-                                        "CPP (*.cpp);;H (*.h )");
+                                        "CPP (*.cpp);;H (*.h );;idl(*.idl)");
     if(filesList.count()>0)
     {
         ui->showFileList->setText(tr("共选中")+QString::number(filesList.count()) +tr("个文件 ：")+filesList.first());
@@ -229,6 +232,7 @@ void CodeWidget::addNewItem()
     for(int i=0;i<ui->fileTableList->columnCount();i++)
     {
         QTableWidgetItem *item = new QTableWidgetItem();
+
         if(i == 0)
         {
             item->setTextColor(QColor(0,0,255,255));
@@ -343,6 +347,15 @@ void CodeWidget::tableItemClicked(QTableWidgetItem *item)
     {
         ui->statusBar->showMessage(ui->fileTableList->item(item->row(),0)->toolTip());
     }
+}
+
+//点击表头排序
+void CodeWidget::mySort(int column)
+{
+    qDebug()<<__FILE__<<__FUNCTION__<<__LINE__<<__DATE__<<__TIME__<<"\n"
+           <<column
+           <<"\n";
+    ui->fileTableList->sortByColumn(column);
 }
 
 CodeWidget::~CodeWidget()

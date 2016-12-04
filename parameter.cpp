@@ -17,6 +17,7 @@ void Parameter::initFormats()
 {
     formats += "*.h";
     formats += "*.cpp";
+    formats += "*.idl";
 
     formatList = formats;
 }

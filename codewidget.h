@@ -5,6 +5,8 @@
 //描述：   软件主界面
 //其它：
 //修改历史：
+//2016.12.04:sc:    添加结果导出功能；添加排序功能；单元格不可编辑；
+//                  添加文件类型idl;
 //**************************************************
 
 #ifndef CODEWIDGET_H
@@ -45,6 +47,7 @@ private slots:
     void makeForFile(bool);
     void updateTable(QString fileName,int totleLines, int codeLines, int noteLines, int spaceLines);
     void tableItemClicked(QTableWidgetItem *);
+    void mySort(int);
 
 private:
     void initConnect();
