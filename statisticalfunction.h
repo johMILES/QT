@@ -1,3 +1,13 @@
+//**************************************************
+//版权：   RenGu Company
+//文件名： statisticalfunction.h
+//作者：   尚超     Version：1.0    Date：2016.XX.XX
+//描述：   统计方法集合
+//其它：
+//修改历史：
+//2016.12.05:sc:    完善在Windows平台下的空行统计功能
+//**************************************************
+
 #ifndef STATISTICALFUNCTION_H
 #define STATISTICALFUNCTION_H
 

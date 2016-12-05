@@ -60,7 +60,12 @@ void StatisticalFunction::Statistical()
                     startShiftNote = false; //结束行注释
                     reader.readLine();
                     totleNum++;
+#ifdef Q_OS_MAC
                     ch = '\xa';
+#else
+                    ch = '\n';
+#endif
+
                 }
             }
             else if(preCh == '*'){

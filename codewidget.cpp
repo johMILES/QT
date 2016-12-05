@@ -92,12 +92,28 @@ void CodeWidget::selectFile(bool)
 
     QString currPath = QDir::currentPath();
 
+    //设置读取的文件类型
+    QString formatString;
+    for(int i=0;i<format.count();i++)
+    {
+        formatString += "(";
+        formatString += format.at(i);
+        formatString += ")";
+        if(i!=format.count()-1)
+        {
+            formatString += ";;";
+        }
+    }
+    qDebug()<<__FILE__<<__FUNCTION__<<__LINE__<<__DATE__<<__TIME__<<"\n"
+           <<format<<formatString
+           <<"\n";
+
     filesList.clear();
     filesList = QFileDialog::getOpenFileNames(
                                         this,
                                         tr("选择文件"),
                                         currPath,
-                                        "CPP (*.cpp);;H (*.h );;idl(*.idl)");
+                                        formatString);
     if(filesList.count()>0)
     {
         ui->showFileList->setText(tr("共选中")+QString::number(filesList.count()) +tr("个文件 ：")+filesList.first());

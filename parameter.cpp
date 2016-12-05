@@ -110,6 +110,12 @@ QStringList Parameter::getFormatList()
     return formatList;
 }
 
+//解读配置文件信息
+void Parameter::readIniFile()
+{
+
+}
+
 Parameter::~Parameter()
 {
     delete ui;

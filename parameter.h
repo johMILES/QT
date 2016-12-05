@@ -39,6 +39,7 @@ private:
     void initFormats();
     void initListWidget();
     void setFormats(int);
+    void readIniFile();
 
     Ui::Parameter *ui;
     QStringList formatList;     //文件类型列表
