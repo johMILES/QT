@@ -146,13 +146,9 @@ void StatisticalFunction::Statistical()
             if(startAreaNote == 0){
                 codeAfterNote++;
                 isCodeLine = true;  //1.8
-                qDebug()<<__FILE__<<__FUNCTION__<<__LINE__<<__DATE__<<__TIME__<<"\n"
-                       <<"-->"<<ch
-                       <<"\n";
             }
 
             isSpaceLine = false;
-//            isCodeLine = true;
         }
 
         preCh = ch;

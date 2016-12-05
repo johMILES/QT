@@ -16,6 +16,7 @@
 #include <QUrl>
 #include <QMessageBox>
 #include <QVariant>
+#include <QDateTime>
 
 #include <QDebug>
 
@@ -389,7 +390,9 @@ QString CodeWidget::makeHtmlSontents()
     preMess += "<div align="">";
     preMess += "<p align=\"center\">";
     preMess += "<font face=\"楷体_GB2312\" size=\"5\">统计结果";
-    preMess += "<p align=\"center\"><font face=\"Times New Roman\" size=\"3\">2016-12-05 10:48:05<br><br>";
+    preMess += "<p align=\"center\"><font face=\"Times New Roman\" size=\"3\">";
+    preMess += QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    preMess += "<br><br>";
 
     preMess += "<div align=\"center\">";
     preMess += "<center>";
