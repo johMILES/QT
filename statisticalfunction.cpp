@@ -1,6 +1,7 @@
 #include "statisticalfunction.h"
 #include <QFile>
 #include <QTextStream>
+#include <QDebug>
 
 StatisticalFunction::StatisticalFunction(QObject *parent) : QObject(parent)
 {
@@ -37,6 +38,7 @@ void StatisticalFunction::Statistical()
     int startAreaNote = 0;
     int codeAfterNote=0;    // */类型后有代码的清空，计算是不是有代码
     bool isSpaceLine=true;  //当前行是否是空行，默认初始化是空行
+    bool isCodeLine = false;//当前行是否有代码，默认为没有代码
     QChar ch;
     QChar preCh;
 
@@ -47,6 +49,7 @@ void StatisticalFunction::Statistical()
         spaceLines = 0;
         return;
     }
+
 
     QTextStream reader(file);
 
@@ -63,10 +66,16 @@ void StatisticalFunction::Statistical()
                     reader.readLine();
                     totleNum++;
 #ifdef Q_OS_MAC
+                    isSpaceLine = true;
                     ch = '\xa';
 #else
+                    isSpaceLine = true;
                     ch = '\n';
 #endif
+                    if(codeAfterNote >0){
+                        codeNum++;
+                        codeAfterNote=0;
+                    }
                 }
             }
             else if(preCh == '*'){
@@ -89,22 +98,24 @@ void StatisticalFunction::Statistical()
                 startShiftNote = false;
             }
         }
-#ifdef Q_OS_MAC
         else if(ch == '\xa'){
             if(startAreaNote>0){
                 startAreaNote++;    // 如果此时的区域注释计数器大于0，则当前的换行是在注释范围内，区域注释计数器加一
             }
-            else if(preCh == '\xa')
+            else if(isSpaceLine == true)
             {
                 spaceNum++;
             }
-            else if(codeAfterNote>0){
+            else if(codeAfterNote >0){
                 codeNum++;
                 codeAfterNote=0;
             }
             totleNum++;
+            isSpaceLine = true;
         }
-#else
+        else if(ch == '\r'){
+
+        }
         else if(ch == '\n'){
 
             if(startAreaNote>0){
@@ -114,25 +125,34 @@ void StatisticalFunction::Statistical()
             {
                 spaceNum++;
             }
-            else if(codeAfterNote>0){
+            else if(codeAfterNote >0 ){
                 codeNum++;
                 codeAfterNote=0;
             }
             totleNum++;
             isSpaceLine = true;
+            isCodeLine = false; //1.8
         }
-#endif
         else if(ch == '\t'){
 
         }
         else if(ch == ' '){
 
         }
+        else if(ch == '\0'){
+
+        }
         else{
             if(startAreaNote == 0){
                 codeAfterNote++;
+                isCodeLine = true;  //1.8
+                qDebug()<<__FILE__<<__FUNCTION__<<__LINE__<<__DATE__<<__TIME__<<"\n"
+                       <<"-->"<<ch
+                       <<"\n";
             }
+
             isSpaceLine = false;
+//            isCodeLine = true;
         }
 
         preCh = ch;

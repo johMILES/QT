@@ -19,5 +19,5 @@ int main(int argc, char *argv[])
     CodeWidget w;
     w.show();
 
-    return a.exec();
+    return a.exec(); //jj
 }
