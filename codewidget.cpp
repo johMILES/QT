@@ -331,6 +331,7 @@ void CodeWidget::makeForFile(bool)
         return;
     }
     QString contents ;          //导出的文件内容->需要写入到文件的字符串
+
     //V1.0 写入到txt文件中
 //    int index=0;
 

@@ -102,7 +102,7 @@ void StatisticalFunction::Statistical()
             if(startAreaNote>0){
                 startAreaNote++;    // 如果此时的区域注释计数器大于0，则当前的换行是在注释范围内，区域注释计数器加一
             }
-            else if(preCh == '\xa')
+            else if(preCh == '\n')
             {
                 spaceNum++;
             }
@@ -139,4 +139,3 @@ StatisticalFunction::~StatisticalFunction()
     file->close();
     delete file;
 }
-
