@@ -15,6 +15,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QMessageBox>
+#include <QVariant>
 
 #include <QDebug>
 
@@ -223,10 +224,11 @@ void CodeWidget::updateTable(QString fileName,int totleLines,int codeLines,int n
     ui->fileTableList->item(ui->fileTableList->rowCount()-1,0)->setText(info.fileName());
     ui->fileTableList->item(ui->fileTableList->rowCount()-1,0)->setToolTip(fileName);
 
-    ui->fileTableList->item(ui->fileTableList->rowCount()-1,1)->setText(QString::number(totleLines));
-    ui->fileTableList->item(ui->fileTableList->rowCount()-1,2)->setText(QString::number(codeLines));
-    ui->fileTableList->item(ui->fileTableList->rowCount()-1,3)->setText(QString::number(noteLines));
-    ui->fileTableList->item(ui->fileTableList->rowCount()-1,4)->setText(QString::number(spaceLines));
+
+    ui->fileTableList->item(ui->fileTableList->rowCount()-1,1)->setData(2,QVariant(totleLines));
+    ui->fileTableList->item(ui->fileTableList->rowCount()-1,2)->setData(2,QVariant(codeLines));
+    ui->fileTableList->item(ui->fileTableList->rowCount()-1,3)->setData(2,QVariant(noteLines));
+    ui->fileTableList->item(ui->fileTableList->rowCount()-1,4)->setData(2,QVariant(spaceLines));
 
     ui->statusBar->showMessage(fileName+" 统计完成");
 
@@ -314,8 +316,14 @@ void CodeWidget::lookForFile(const QString &path)
 //导出统计结果
 void CodeWidget::makeForFile(bool)
 {
+    if(fileResults.count()<=0)
+    {
+        QMessageBox::warning(this,tr("提示"),tr("无可用结果导出。"));
+        return;
+    }
     QString contents ;          //导出的文件内容->需要写入到文件的字符串
     int index=0;
+
     contents += tr("代码统计工具统计结果\n");
     contents += tr("共文件")+QString::number(fileResults.count())+tr("个\n");
     foreach(FileResults *fr,fileResults)
@@ -338,7 +346,7 @@ void CodeWidget::makeForFile(bool)
     }
 
     QTextStream writer(&file);
-    writer.setCodec(QTextCodec::codecForName("UTF-8"));
+    writer.setCodec(QTextCodec::codecForName("GB2312"));
     writer<<contents;
 
     file.close();
