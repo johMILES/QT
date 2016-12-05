@@ -96,7 +96,8 @@ void CodeWidget::selectFile(bool)
     QString formatString;
     for(int i=0;i<format.count();i++)
     {
-        formatString += "(";
+        formatString += format.at(i);
+        formatString += " (";
         formatString += format.at(i);
         formatString += ")";
         if(i!=format.count()-1)
@@ -104,9 +105,6 @@ void CodeWidget::selectFile(bool)
             formatString += ";;";
         }
     }
-    qDebug()<<__FILE__<<__FUNCTION__<<__LINE__<<__DATE__<<__TIME__<<"\n"
-           <<format<<formatString
-           <<"\n";
 
     filesList.clear();
     filesList = QFileDialog::getOpenFileNames(

@@ -36,6 +36,7 @@ void StatisticalFunction::Statistical()
     bool startShiftNote = false;
     int startAreaNote = 0;
     int codeAfterNote=0;    // */类型后有代码的清空，计算是不是有代码
+    bool isSpaceLine=true;  //当前行是否是空行，默认初始化是空行
     QChar ch;
     QChar preCh;
 
@@ -54,6 +55,7 @@ void StatisticalFunction::Statistical()
         reader>>ch;
 
         if(ch == '/'){
+            isSpaceLine = false;
             if(preCh == '/'){
                 if(startShiftNote){
                     noteNum++;
@@ -65,7 +67,6 @@ void StatisticalFunction::Statistical()
 #else
                     ch = '\n';
 #endif
-
                 }
             }
             else if(preCh == '*'){
@@ -79,6 +80,7 @@ void StatisticalFunction::Statistical()
             }
         }
         else if(ch == '*'){
+            isSpaceLine = false;
             if(preCh == '/'){
                 startAreaNote++;    // 此时为 /* 类型，区域注释计数器加一
             }
@@ -104,10 +106,11 @@ void StatisticalFunction::Statistical()
         }
 #else
         else if(ch == '\n'){
+
             if(startAreaNote>0){
                 startAreaNote++;    // 如果此时的区域注释计数器大于0，则当前的换行是在注释范围内，区域注释计数器加一
             }
-            else if(preCh == '\n')
+            else if(isSpaceLine == true)
             {
                 spaceNum++;
             }
@@ -116,6 +119,7 @@ void StatisticalFunction::Statistical()
                 codeAfterNote=0;
             }
             totleNum++;
+            isSpaceLine = true;
         }
 #endif
         else if(ch == '\t'){
@@ -128,6 +132,7 @@ void StatisticalFunction::Statistical()
             if(startAreaNote == 0){
                 codeAfterNote++;
             }
+            isSpaceLine = false;
         }
 
         preCh = ch;
