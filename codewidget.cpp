@@ -215,9 +215,9 @@ void CodeWidget::updateTable(QString fileName,int totleLines,int codeLines,int n
     fileResults.append(fr);
 
     ui->totleLines->setText(QString::number(files_TotleLines)+"(共"+QString::number(file_Numbers) +"个文件)");
-    ui->totleCodeLines->setText(QString::number(files_CodeLines)+"("+QString::number((float)files_CodeLines/files_TotleLines*100) +"%)");
-    ui->totleNoteLines->setText(QString::number(files_NoteLines)+"("+QString::number((float)files_NoteLines/files_TotleLines*100) +"%)");
-    ui->totleSapceLines->setText(QString::number(files_SpaceLines)+"("+QString::number((float)files_SpaceLines/files_TotleLines*100) +"%)");
+    ui->totleCodeLines->setText(QString::number(files_CodeLines)+"("+QString::number((float)files_CodeLines/files_TotleLines*100,'f',2) +"%)");
+    ui->totleNoteLines->setText(QString::number(files_NoteLines)+"("+QString::number((float)files_NoteLines/files_TotleLines*100,'f',2) +"%)");
+    ui->totleSapceLines->setText(QString::number(files_SpaceLines)+"("+QString::number((float)files_SpaceLines/files_TotleLines*100,'f',2) +"%)");
 
     addNewItem();
     QFileInfo info(fileName);
