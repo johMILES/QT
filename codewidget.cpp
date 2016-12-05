@@ -59,6 +59,7 @@ void CodeWidget::initUiStatus()
 {
     ui->fileTableList->horizontalHeader()->setSortIndicatorShown(true);
     ui->fileTableList->setEditTriggers( QAbstractItemView::NoEditTriggers );
+    ui->fileTableList->setSelectionBehavior(QAbstractItemView::SelectRows); //行选中属性
 }
 
 //初始化控件的提示信息
@@ -106,6 +107,10 @@ void CodeWidget::selectFile(bool)
         ui->showFileList->setText("");
     }
 
+    //清空界面显示和表格条目
+    clearAllTableItem();
+    clearTotleLineEdit();
+
 }
 
 //选择需要统计的文件夹目录
@@ -124,6 +129,10 @@ void CodeWidget::selectDir(bool)
     filesList.clear();
 
     lookForFile(path);
+
+    //清空界面显示和表格条目
+    clearAllTableItem();
+    clearTotleLineEdit();
 }
 
 //开始统计
@@ -322,23 +331,27 @@ void CodeWidget::makeForFile(bool)
         return;
     }
     QString contents ;          //导出的文件内容->需要写入到文件的字符串
-    int index=0;
+    //V1.0 写入到txt文件中
+//    int index=0;
 
-    contents += tr("代码统计工具统计结果\n");
-    contents += tr("共文件")+QString::number(fileResults.count())+tr("个\n");
-    foreach(FileResults *fr,fileResults)
-    {
-        contents+=QString::number(++index)+tr(".文件名：")+fr->filePath+" ;\n";
-        contents+=tr("文件总行数：")+QString::number(fr->totleLines) + " ;";
-        contents+=tr("代码总行数：")+QString::number(fr->codeLines) + " ;";
-        contents+=tr("注释行：")+QString::number(fr->noteLines) + " ;";
-        contents+=tr("空行：")+QString::number(fr->spaceLines) + " ;";
-        contents+="\n\n";
-    }
+//    contents += tr("代码统计工具统计结果\n");
+//    contents += tr("共文件")+QString::number(fileResults.count())+tr("个\n");
+//    foreach(FileResults *fr,fileResults)
+//    {
+//        contents+=QString::number(++index)+tr(".文件名：")+fr->filePath+" ;\n";
+//        contents+=tr("文件总行数：")+QString::number(fr->totleLines) + " ;";
+//        contents+=tr("代码总行数：")+QString::number(fr->codeLines) + " ;";
+//        contents+=tr("注释行：")+QString::number(fr->noteLines) + " ;";
+//        contents+=tr("空行：")+QString::number(fr->spaceLines) + " ;";
+//        contents+="\r\n\r\n";
+//    }
+
+    //V2.0 写入到HTML文件中
+    contents = makeHtmlSontents();
 
     QString fileName = QFileDialog::getSaveFileName(this,
                                  tr("保存文件"),
-                                 tr("代码统计结果.txt"));
+                                 tr("代码统计结果"),tr("HTML (*.html)"));
     QFile file(fileName);
     if(!file.open(QFile::ReadWrite))
     {
@@ -350,6 +363,80 @@ void CodeWidget::makeForFile(bool)
     writer<<contents;
 
     file.close();
+}
+
+//生成指定格式的Html导出文件内容
+QString CodeWidget::makeHtmlSontents()
+{
+    QString preMess;
+    preMess += "<html>";
+    preMess += "<body>";
+    preMess += "<div align="">";
+    preMess += "<p align=\"center\">";
+    preMess += "<font face=\"楷体_GB2312\" size=\"5\">统计结果";
+    preMess += "<p align=\"center\"><font face=\"Times New Roman\" size=\"3\">2016-12-05 10:48:05<br><br>";
+
+    preMess += "<div align=\"center\">";
+    preMess += "<center>";
+    preMess += "<table border=\"1\" width=\"100%\" cellspacing=\"1\"><br>";
+    preMess += "<tr>";
+    preMess += "<td width=\"15%\" align=\"center\"><font color=\"#800080\">文件名称</font></td>";
+    preMess += "<td width=\"15%\" align=\"center\"><font color=\"#800080\">总行数</font></td>";
+    preMess += "<td width=\"15%\" align=\"center\"><font color=\"#800080\">代码行数</font></td>";
+    preMess += "<td width=\"15%\" align=\"center\"><font color=\"#800080\">注释行数</font></td>";
+    preMess += "<td width=\"15%\" align=\"center\"><font color=\"#800080\">空白行数</font></td>";
+    preMess += "</tr>";
+
+    foreach (FileResults* fr, fileResults)
+    {
+//        <tr>
+//            <td width="40%">E:\Git\git\abspath.c</td>
+//            <td width="15%">180</td>
+//            <td width="15%">122</td>
+//            <td width="15%">39</td>
+//            <td width="15%">19</td>
+//        </tr>
+        preMess += "<td width=\"40%\">";
+        preMess += fr->filePath ;
+        preMess += "</td>";
+        preMess += "<td width=\"15%\">";
+        preMess += QString::number(fr->totleLines);
+        preMess += "</td>";
+        preMess += "<td width=\"15%\">";
+        preMess += QString::number(fr->codeLines);
+        preMess += "</td>";
+        preMess += "<td width=\"15%\">";
+        preMess += QString::number(fr->noteLines);
+        preMess += "</td>";
+        preMess += "<td width=\"15%\">";
+        preMess += QString::number(fr->spaceLines);
+        preMess += "</td>";
+        preMess += "</tr>";
+    }
+
+    //统计结果汇总
+    preMess += "<td width=\"40%\">";
+    preMess += "统计结果汇总";
+    preMess += "</td>";
+    preMess += "<td width=\"15%\">";
+    preMess += ui->totleLines->text();
+    preMess += "</td>";
+    preMess += "<td width=\"15%\">";
+    preMess += ui->totleCodeLines->text();
+    preMess += "</td>";
+    preMess += "<td width=\"15%\">";
+    preMess += ui->totleNoteLines->text();
+    preMess += "</td>";
+    preMess += "<td width=\"15%\">";
+    preMess += ui->totleSapceLines->text();
+    preMess += "</td>";
+    preMess += "</tr>";
+
+    //结束尾标志
+    preMess += "</table></center></div></body></html>";
+
+    return preMess;
+
 }
 
 //响应表格点击事件

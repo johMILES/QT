@@ -63,6 +63,7 @@ private:
     void clearTable();
     void clearAllTableItem();
     void clearTotleLineEdit();
+    QString makeHtmlSontents();
 
     Ui::CodeWidget *ui;
     StatisticalThread *stThread;    //统计步骤线程
