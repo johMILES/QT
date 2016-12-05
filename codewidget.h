@@ -7,12 +7,15 @@
 //修改历史：
 //2016.12.04:sc:    添加结果导出功能；添加排序功能；单元格不可编辑；
 //                  添加文件类型idl; 添加在Windows下查看文件源码功能；
+//2016.12.05:sc:    完善结果文件导出功能；完善表头排序功能；
+//                  完善界面比例显示功能；
 //**************************************************
 
 #ifndef CODEWIDGET_H
 #define CODEWIDGET_H
 
 #include <QMainWindow>
+#include <QStringList>
 class QTableWidgetItem;
 class StatisticalThread;
 class Parameter;

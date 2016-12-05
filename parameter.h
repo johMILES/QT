@@ -1,7 +1,17 @@
+//**************************************************
+//版权：   RenGu Company
+//文件名： parameter.h
+//作者：   尚超     Version：1.0    Date：2016.XX.XX
+//描述：   参数设置界面
+//其它：
+//修改历史：
+//**************************************************
+
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
 #include <QDialog>
+#include <QStringList>
 
 class QListWidgetItem;
 
