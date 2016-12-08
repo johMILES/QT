@@ -119,7 +119,9 @@ void CodeWidget::selectFile(bool)
     }
     else
     {
-        ui->showFileList->setText("");
+//        ui->showFileList->setText("");
+        ui->statusBar->showMessage("取消选择，没有选择文件。");
+        return;
     }
 
     //清空界面显示和表格条目
@@ -135,12 +137,13 @@ void CodeWidget::selectDir(bool)
     QString path = QFileDialog::getExistingDirectory(this,
                                                  tr("选择文件夹"),
                                                  currPath);
-    ui->showFileList->setText("选中文件夹目录："+path);
 
     if(path == NULL)
     {
+        ui->statusBar->showMessage("取消选择，没有选择文件夹。");
         return;
     }
+    ui->showFileList->setText("选中文件夹目录："+path);
     filesList.clear();
 
     lookForFile(path);
